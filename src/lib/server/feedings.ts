@@ -24,8 +24,12 @@ export interface Feeding {
 	fed_at: string;
 }
 
-function getTodayDateString(): string {
-	return new Date().toISOString().split('T')[0];
+const DAY_RESET_HOUR_UTC = 3;
+
+function getFeedingDayString(): string {
+	const now = new Date();
+	const adjusted = new Date(now.getTime() - DAY_RESET_HOUR_UTC * 60 * 60 * 1000);
+	return adjusted.toISOString().split('T')[0];
 }
 
 function getCurrentUTCTimeMinutes(): number {
@@ -55,7 +59,7 @@ export async function getFeedingSchedule(db: D1Database): Promise<FeedingWindow[
 }
 
 export async function getTodaysFeedings(db: D1Database): Promise<Feeding[]> {
-	const today = getTodayDateString();
+	const today = getFeedingDayString();
 	const result = await db
 		.prepare(
 			`SELECT f.id, f.user_id, u.name as user_name, f.window_time, f.photo_key, f.fed_at
@@ -100,7 +104,7 @@ export async function recordFeeding(
 }
 
 export async function isWindowAlreadyFed(db: D1Database, windowTime: string): Promise<boolean> {
-	const today = getTodayDateString();
+	const today = getFeedingDayString();
 	const result = await db
 		.prepare('SELECT id FROM feedings WHERE window_time = ? AND date(fed_at) = ? LIMIT 1')
 		.bind(windowTime, today)
