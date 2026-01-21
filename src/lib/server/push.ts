@@ -16,6 +16,11 @@ interface PushPayload {
 	url?: string;
 }
 
+function getRandomMooseIcon(): string {
+	const num = Math.floor(Math.random() * 8) + 1;
+	return `/moose-${num}.png`;
+}
+
 export async function savePushSubscription(
 	db: D1Database,
 	userId: number,
@@ -75,6 +80,7 @@ export async function sendPushToAll(
 					payload: {
 						title: payload.title,
 						body: payload.body,
+						icon: getRandomMooseIcon(),
 						data: { url: payload.url || '/' }
 					},
 					options: {
