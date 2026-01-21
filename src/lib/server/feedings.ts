@@ -86,3 +86,25 @@ export async function isWindowAlreadyFed(db: D1Database, windowTime: string): Pr
 		.first();
 	return !!result;
 }
+
+export async function getFeedingHistory(
+	db: D1Database,
+	limit: number = 20,
+	offset: number = 0
+): Promise<{ feedings: Feeding[]; total: number }> {
+	const countResult = await db.prepare('SELECT COUNT(*) as count FROM feedings').first<{ count: number }>();
+	const total = countResult?.count ?? 0;
+
+	const result = await db
+		.prepare(
+			`SELECT f.id, f.user_id, u.name as user_name, f.window_time, f.photo_key, f.fed_at
+			 FROM feedings f
+			 JOIN users u ON f.user_id = u.id
+			 ORDER BY f.fed_at DESC
+			 LIMIT ? OFFSET ?`
+		)
+		.bind(limit, offset)
+		.all<Feeding>();
+
+	return { feedings: result.results, total };
+}
