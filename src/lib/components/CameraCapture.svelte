@@ -5,7 +5,7 @@
 	let canvasEl: HTMLCanvasElement;
 	let stream: MediaStream | null = $state(null);
 	let error: string | null = $state(null);
-	let captured: boolean = $state(false);
+	let previewUrl: string | null = $state(null);
 
 	async function startCamera() {
 		try {
@@ -34,12 +34,12 @@
 		canvasEl.width = videoEl.videoWidth;
 		canvasEl.height = videoEl.videoHeight;
 		ctx.drawImage(videoEl, 0, 0);
-		captured = true;
+		previewUrl = canvasEl.toDataURL('image/jpeg', 0.85);
 		stopCamera();
 	}
 
 	function retake() {
-		captured = false;
+		previewUrl = null;
 		startCamera();
 	}
 
@@ -74,22 +74,22 @@
 				<p>{error}</p>
 				<button class="btn-primary" onclick={handleCancel}>Close</button>
 			</div>
-		{:else if captured}
-			<canvas bind:this={canvasEl} class="preview"></canvas>
+		{:else if previewUrl}
+			<img src={previewUrl} alt="Preview" class="preview" />
 			<div class="controls">
 				<button class="btn-secondary" onclick={retake}>Retake</button>
 				<button class="btn-primary" onclick={confirm}>Use Photo</button>
 			</div>
 		{:else}
 			<video bind:this={videoEl} playsinline muted class="video-feed"></video>
-			<canvas bind:this={canvasEl} style="display: none;"></canvas>
 			<div class="controls">
 				<button class="btn-secondary" onclick={handleCancel}>Cancel</button>
-			<button class="btn-primary capture-btn" onclick={capture} aria-label="Take photo">
-				<span class="capture-icon"></span>
-			</button>
+				<button class="btn-primary capture-btn" onclick={capture} aria-label="Take photo">
+					<span class="capture-icon"></span>
+				</button>
 			</div>
 		{/if}
+		<canvas bind:this={canvasEl} style="display: none;"></canvas>
 	</div>
 </div>
 
@@ -113,11 +113,15 @@
 		padding: 1rem;
 	}
 
-	.video-feed,
-	.preview {
+	.video-feed {
 		width: 100%;
 		border-radius: var(--radius);
 		background: #000;
+	}
+
+	.preview {
+		width: 100%;
+		border-radius: var(--radius);
 	}
 
 	.controls {
