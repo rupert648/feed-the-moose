@@ -3,15 +3,19 @@
 
 	let { feeding }: { feeding: Feeding } = $props();
 
-	function formatDateTime(dateStr: string): { date: string; time: string } {
+	function formatDateTime(dateStr: string): string {
 		const d = new Date(dateStr);
-		const date = d.toLocaleDateString(undefined, {
-			weekday: 'short',
-			month: 'short',
-			day: 'numeric'
-		});
+		const now = new Date();
+		const isToday = d.toDateString() === now.toDateString();
+		const yesterday = new Date(now);
+		yesterday.setDate(yesterday.getDate() - 1);
+		const isYesterday = d.toDateString() === yesterday.toDateString();
+
 		const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-		return { date, time };
+
+		if (isToday) return time;
+		if (isYesterday) return `Yesterday ${time}`;
+		return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ` ${time}`;
 	}
 
 	const formatted = $derived(formatDateTime(feeding.fed_at));
@@ -22,26 +26,30 @@
 	{#if photoUrl}
 		<div class="photo">
 			<img src={photoUrl} alt="Moose being fed" loading="lazy" />
+			<div class="overlay">
+				<span class="who">{feeding.user_name}</span>
+				<span class="when">{formatted}</span>
+			</div>
+		</div>
+	{:else}
+		<div class="no-photo">
+			<div class="overlay">
+				<span class="who">{feeding.user_name}</span>
+				<span class="when">{formatted}</span>
+			</div>
 		</div>
 	{/if}
-	<div class="details">
-		<div class="who">{feeding.user_name} fed Moose</div>
-		<div class="when">
-			<span class="date">{formatted.date}</span>
-			<span class="time">{formatted.time}</span>
-		</div>
-	</div>
 </article>
 
 <style>
 	.feeding-card {
-		background: var(--color-surface);
 		border-radius: var(--radius);
 		overflow: hidden;
 		box-shadow: var(--shadow);
 	}
 
 	.photo {
+		position: relative;
 		width: 100%;
 		aspect-ratio: 4/3;
 	}
@@ -52,23 +60,36 @@
 		object-fit: cover;
 	}
 
-	.details {
-		padding: 16px;
+	.no-photo {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 4/3;
+		background: var(--color-surface);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.overlay {
+		position: absolute;
+		top: 12px;
+		left: 12px;
+		background: rgba(0, 0, 0, 0.6);
+		color: white;
+		padding: 8px 12px;
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
 	}
 
 	.who {
 		font-weight: 600;
-		margin-bottom: 4px;
+		font-size: 0.9375rem;
 	}
 
 	.when {
-		font-size: 0.875rem;
-		color: var(--color-text-muted);
-		display: flex;
-		gap: 8px;
-	}
-
-	.time {
-		color: var(--color-text-muted);
+		font-size: 0.8125rem;
+		opacity: 0.9;
 	}
 </style>

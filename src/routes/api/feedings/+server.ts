@@ -1,9 +1,36 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { recordFeeding, isWindowAlreadyFed } from '$lib/server/feedings';
+import { recordFeeding, isWindowAlreadyFed, getFeedingHistory } from '$lib/server/feedings';
 import { uploadPhoto } from '$lib/server/r2';
 import { verifySession, COOKIE_NAME } from '$lib/server/auth';
 import { sendPushToAll } from '$lib/server/push';
+
+const PAGE_SIZE = 20;
+
+export const GET: RequestHandler = async ({ url, platform, cookies }) => {
+	if (!platform?.env) {
+		throw error(500, 'Server configuration error');
+	}
+
+	const token = cookies.get(COOKIE_NAME);
+	const session = await verifySession(token, platform.env.SHARED_SECRET);
+	if (!session) {
+		throw error(401, 'Unauthorized');
+	}
+
+	const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
+	const offset = (page - 1) * PAGE_SIZE;
+
+	const { feedings, total } = await getFeedingHistory(platform.env.DB, PAGE_SIZE, offset);
+
+	return json({
+		feedings,
+		total,
+		page,
+		pageSize: PAGE_SIZE,
+		hasMore: offset + feedings.length < total
+	});
+};
 
 export const POST: RequestHandler = async ({ request, platform, cookies }) => {
 	if (!platform?.env) {

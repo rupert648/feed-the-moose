@@ -19,7 +19,6 @@
 		<nav>
 			<a href="/" class="logo">Feed the Moose</a>
 			<div class="nav-links">
-				<a href="/feed">History</a>
 				<a href="/settings">Settings</a>
 				<form method="POST" action="/logout" style="display: inline;">
 					<button type="submit" class="btn-link">Logout</button>

@@ -3,10 +3,12 @@
 
 	let {
 		window,
-		onFeed
+		onFeed,
+		compact = false
 	}: {
 		window: FeedingStatus;
 		onFeed: (windowTime: string) => void;
+		compact?: boolean;
 	} = $props();
 
 	let showOverride = $state(false);
@@ -30,34 +32,38 @@
 	}
 </script>
 
-<div class="feeding-window" class:fed={window.isFed} class:inactive={!window.isActive && !window.isFed}>
+<div class="feeding-window" class:fed={window.isFed} class:inactive={!window.isActive && !window.isFed} class:compact>
 	<div class="window-info">
-		<div class="time">{formatTime(window.time)} <span class="utc-label">UTC</span></div>
-		{#if window.label}
-			<div class="label">{window.label}</div>
-		{/if}
+		<div class="time">
+			{#if window.label}<span class="label">{window.label}</span>{:else}{formatTime(window.time)}{/if}
+			{#if !compact}<span class="utc-label">UTC</span>{/if}
+		</div>
 	</div>
 
 	<div class="window-status">
 		{#if window.isFed}
 			<div class="fed-info">
 				<span class="check">✓</span>
-				<span>Fed by {window.fedBy} at {formatFedAt(window.fedAt!)}</span>
+				{#if compact}
+					<span>{window.fedBy}</span>
+				{:else}
+					<span>Fed by {window.fedBy} at {formatFedAt(window.fedAt!)}</span>
+				{/if}
 			</div>
 		{:else if window.isActive}
 			<button class="btn-primary feed-btn" onclick={handleFeed}>
-				Feed Moose
+				{compact ? 'Feed' : 'Feed Moose'}
 			</button>
 		{:else if showOverride}
 			<div class="override-confirm">
 				<button class="btn-secondary" onclick={() => showOverride = false}>Cancel</button>
-				<button class="btn-primary feed-btn" onclick={handleFeed}>Feed Anyway</button>
+				<button class="btn-primary feed-btn" onclick={handleFeed}>Feed</button>
 			</div>
 		{:else}
 			<div class="not-yet">
 				<span class="waiting">Not yet</span>
 				<button class="btn-link override-btn" onclick={() => showOverride = true}>
-					Feed early?
+					Early?
 				</button>
 			</div>
 		{/if}
@@ -74,6 +80,12 @@
 		align-items: center;
 		box-shadow: var(--shadow);
 		border: 2px solid transparent;
+	}
+
+	.feeding-window.compact {
+		padding: 10px 14px;
+		box-shadow: none;
+		border-radius: 8px;
 	}
 
 	.feeding-window.fed {
@@ -96,6 +108,10 @@
 		font-weight: 600;
 	}
 
+	.compact .time {
+		font-size: 1rem;
+	}
+
 	.utc-label {
 		font-size: 0.625rem;
 		color: var(--color-text-muted);
@@ -104,8 +120,7 @@
 	}
 
 	.label {
-		font-size: 0.875rem;
-		color: var(--color-text-muted);
+		font-weight: 600;
 	}
 
 	.fed-info {
@@ -116,13 +131,27 @@
 		color: var(--color-success);
 	}
 
+	.compact .fed-info {
+		font-size: 0.8125rem;
+		gap: 4px;
+	}
+
 	.check {
 		font-weight: 700;
 		font-size: 1rem;
 	}
 
+	.compact .check {
+		font-size: 0.875rem;
+	}
+
 	.feed-btn {
 		padding: 10px 20px;
+	}
+
+	.compact .feed-btn {
+		padding: 8px 16px;
+		font-size: 0.875rem;
 	}
 
 	.not-yet {
@@ -132,9 +161,19 @@
 		gap: 4px;
 	}
 
+	.compact .not-yet {
+		flex-direction: row;
+		gap: 8px;
+		align-items: center;
+	}
+
 	.waiting {
 		font-size: 0.875rem;
 		color: var(--color-text-muted);
+	}
+
+	.compact .waiting {
+		font-size: 0.8125rem;
 	}
 
 	.override-btn {
@@ -155,8 +194,18 @@
 		font-size: 0.875rem;
 	}
 
+	.compact .override-confirm .btn-secondary {
+		padding: 6px 10px;
+		font-size: 0.8125rem;
+	}
+
 	.override-confirm .feed-btn {
 		padding: 8px 12px;
 		font-size: 0.875rem;
+	}
+
+	.compact .override-confirm .feed-btn {
+		padding: 6px 10px;
+		font-size: 0.8125rem;
 	}
 </style>
