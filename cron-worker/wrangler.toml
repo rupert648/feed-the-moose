@@ -3,7 +3,7 @@ main = "worker.js"
 compatibility_date = "2025-01-01"
 
 [triggers]
-crons = ["* * * * *"]
+crons = ["*/5 * * * *"]
 
 [[services]]
 binding = "MAIN_APP"
