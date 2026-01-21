@@ -36,9 +36,10 @@
 	<img src="/moose-7.png" alt="" class="bullet-moose" />
 	<div class="window-info">
 		<div class="time">
-			{#if window.label}<span class="label">{window.label}</span>{:else}{formatTime(window.time)}{/if}
+			{formatTime(window.time)}
 			{#if !compact}<span class="utc-label">UTC</span>{/if}
 		</div>
+		{#if window.label}<div class="label">{window.label}</div>{/if}
 	</div>
 
 	<div class="window-status">
@@ -143,7 +144,8 @@
 	}
 
 	.label {
-		font-weight: 600;
+		font-size: 0.8125rem;
+		color: var(--color-text-muted);
 	}
 
 	.fed-info {
