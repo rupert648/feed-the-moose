@@ -1,8 +1,17 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import '../app.css';
 	import type { LayoutData } from './$types';
 
 	let { children, data }: { children: any; data: LayoutData } = $props();
+
+	onMount(() => {
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/service-worker.js').catch((err) => {
+				console.warn('Service worker registration failed:', err);
+			});
+		}
+	});
 </script>
 
 {#if data.user}
