@@ -16,7 +16,7 @@
 
 	<section class="card">
 		<h2>Feeding Times</h2>
-		<p class="description">Set when Moose should be fed. You'll get notifications at these times.</p>
+		<p class="description">Set when Moose should be fed. You'll get notifications at these times. (Times are in UTC)</p>
 
 		{#if data.feedingTimes.length === 0}
 			<p class="empty">No feeding times set.</p>
