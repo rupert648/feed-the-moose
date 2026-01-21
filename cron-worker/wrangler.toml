@@ -5,8 +5,9 @@ compatibility_date = "2025-01-01"
 [triggers]
 crons = ["* * * * *"]
 
-[vars]
-APP_URL = "https://feed-the-moose.rupertcarr.workers.dev"
+[[services]]
+binding = "MAIN_APP"
+service = "feed-the-moose"
 
 [observability]
 [observability.logs]
