@@ -1,0 +1,4 @@
+SHARED_SECRET=your-local-dev-secret
+VAPID_PUBLIC_KEY=generate-with-pnpm-generate-vapid
+VAPID_PRIVATE_KEY=generate-with-pnpm-generate-vapid
+VAPID_SUBJECT=mailto:dev@localhost

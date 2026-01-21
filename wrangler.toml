@@ -1,0 +1,18 @@
+name = "feed-the-moose"
+compatibility_date = "2025-01-01"
+main = ".svelte-kit/cloudflare/_worker.js"
+
+[assets]
+directory = ".svelte-kit/cloudflare"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "feed-the-moose-db"
+database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "moose-photos"
+
+[triggers]
+crons = ["*/5 * * * *"]
