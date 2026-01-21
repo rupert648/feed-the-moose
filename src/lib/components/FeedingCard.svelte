@@ -10,12 +10,17 @@
 		const yesterday = new Date(now);
 		yesterday.setDate(yesterday.getDate() - 1);
 		const isYesterday = d.toDateString() === yesterday.toDateString();
+		const isPreviousYear = d.getFullYear() < now.getFullYear();
 
 		const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
 		if (isToday) return time;
 		if (isYesterday) return `Yesterday ${time}`;
-		return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ` ${time}`;
+		
+		const dateOpts: Intl.DateTimeFormatOptions = isPreviousYear
+			? { month: 'short', day: 'numeric', year: 'numeric' }
+			: { month: 'short', day: 'numeric' };
+		return d.toLocaleDateString(undefined, dateOpts) + ` ${time}`;
 	}
 
 	const formatted = $derived(formatDateTime(feeding.fed_at));

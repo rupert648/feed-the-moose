@@ -24,6 +24,7 @@
 			<ul class="feeding-times">
 				{#each data.feedingTimes as ft (ft.time)}
 					<li>
+						<img src="/moose-7.png" alt="" class="bullet-moose" />
 						<div class="time-info">
 							<span class="time">{ft.time}</span>
 							{#if ft.label}
@@ -99,13 +100,22 @@
 	.feeding-times li {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		gap: 12px;
 		padding: 12px 0;
 		border-bottom: 1px solid var(--color-border);
 	}
 
 	.feeding-times li:last-child {
 		border-bottom: none;
+	}
+
+	.bullet-moose {
+		width: 70px;
+		height: 50px;
+		object-fit: cover;
+		object-position: center;
+		flex-shrink: 0;
+		margin: -5px -10px;
 	}
 
 	.time-info {
@@ -126,6 +136,10 @@
 		background: var(--color-bg);
 		padding: 2px 8px;
 		border-radius: 4px;
+	}
+
+	.feeding-times li form {
+		margin-left: auto;
 	}
 
 	.btn-remove {

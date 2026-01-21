@@ -17,7 +17,10 @@
 {#if data.user}
 	<header>
 		<nav>
-			<a href="/" class="logo">Feed the Moose</a>
+			<a href="/" class="logo">
+				<img src="/moose-4.png" alt="" class="logo-img" />
+				Feed the Moose
+			</a>
 			<div class="nav-links">
 				<a href="/settings">Settings</a>
 				<form method="POST" action="/logout" style="display: inline;">
@@ -55,6 +58,17 @@
 		font-size: 1.125rem;
 		color: var(--color-primary);
 		text-decoration: none;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.logo-img {
+		width: 80px;
+		height: 50px;
+		object-fit: cover;
+		object-position: center;
+		margin: -10px -15px;
 	}
 
 	.nav-links {

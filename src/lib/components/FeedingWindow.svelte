@@ -33,6 +33,7 @@
 </script>
 
 <div class="feeding-window" class:fed={window.isFed} class:inactive={!window.isActive && !window.isFed} class:compact>
+	<img src="/moose-7.png" alt="" class="bullet-moose" />
 	<div class="window-info">
 		<div class="time">
 			{#if window.label}<span class="label">{window.label}</span>{:else}{formatTime(window.time)}{/if}
@@ -76,10 +77,32 @@
 		border-radius: var(--radius);
 		padding: 16px 20px;
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
+		gap: 12px;
 		box-shadow: var(--shadow);
 		border: 2px solid transparent;
+	}
+
+	.bullet-moose {
+		width: 70px;
+		height: 50px;
+		object-fit: cover;
+		object-position: center;
+		flex-shrink: 0;
+		margin: -5px -10px;
+	}
+
+	.compact .bullet-moose {
+		width: 60px;
+		height: 45px;
+		margin: -5px -8px;
+	}
+
+	.window-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
 	}
 
 	.feeding-window.compact {
