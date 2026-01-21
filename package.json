@@ -9,6 +9,8 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "deploy": "wrangler deploy",
+    "deploy:cron": "wrangler deploy --config cron-worker/wrangler.toml",
+    "deploy:all": "pnpm run deploy && pnpm run deploy:cron",
     "cf-typegen": "wrangler types",
     "db:migrate": "wrangler d1 execute feed-the-moose-db --file=migrations/0001_initial.sql --local",
     "db:migrate:prod": "wrangler d1 execute feed-the-moose-db --file=migrations/0001_initial.sql --remote",

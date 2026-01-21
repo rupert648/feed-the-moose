@@ -1,0 +1,9 @@
+name = "feed-the-moose-cron"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+APP_URL = "https://feed-the-moose.rupertcarr.workers.dev"
