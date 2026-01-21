@@ -1,12 +1,18 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
+	import NotificationToggle from '$lib/components/NotificationToggle.svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
 
 <main>
 	<h1>Settings</h1>
+
+	<section class="card">
+		<h2>Notifications</h2>
+		<NotificationToggle />
+	</section>
 
 	<section class="card">
 		<h2>Feeding Times</h2>

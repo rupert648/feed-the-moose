@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { recordFeeding, isWindowAlreadyFed } from '$lib/server/feedings';
 import { uploadPhoto } from '$lib/server/r2';
 import { verifySession, COOKIE_NAME } from '$lib/server/auth';
+import { sendPushToAll } from '$lib/server/push';
 
 export const POST: RequestHandler = async ({ request, platform, cookies }) => {
 	if (!platform?.env) {
@@ -35,6 +36,19 @@ export const POST: RequestHandler = async ({ request, platform, cookies }) => {
 	}
 
 	await recordFeeding(platform.env.DB, session.userId, windowTime, photoKey);
+
+	platform.context.waitUntil(
+		sendPushToAll(
+			platform.env.DB,
+			platform.env.VAPID_PRIVATE_KEY,
+			platform.env.VAPID_SUBJECT,
+			{
+				title: 'Moose has been fed!',
+				body: `${session.name} fed Moose`,
+				url: '/'
+			}
+		)
+	);
 
 	return json({ success: true, photoKey });
 };
