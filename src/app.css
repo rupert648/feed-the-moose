@@ -26,6 +26,33 @@ html, body {
 	min-height: 100dvh;
 }
 
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	opacity: 0.06;
+	background-image:
+		url('/moose-2.png'),
+		url('/moose-3.png'),
+		url('/moose-4.png'),
+		url('/moose-5.png'),
+		url('/moose-6.png'),
+		url('/moose-7.png'),
+		url('/moose-8.png');
+	background-size: 120px;
+	background-position:
+		0 0,
+		180px 60px,
+		60px 180px,
+		240px 120px,
+		120px 300px,
+		300px 240px,
+		0 360px;
+	background-repeat: repeat;
+	pointer-events: none;
+}
+
 button {
 	font-family: inherit;
 	cursor: pointer;
