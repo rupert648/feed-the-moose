@@ -34,7 +34,7 @@
 		selectedWindow = null;
 	}
 
-	async function handleCapture(photo: File) {
+	async function handleCapture(photo: File | null) {
 		if (!selectedWindow) return;
 
 		isSubmitting = true;
@@ -42,7 +42,9 @@
 		try {
 			const formData = new FormData();
 			formData.append('windowTime', selectedWindow);
-			formData.append('photo', photo);
+			if (photo) {
+				formData.append('photo', photo);
+			}
 
 			const response = await fetch('/api/feedings', {
 				method: 'POST',

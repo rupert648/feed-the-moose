@@ -1,5 +1,6 @@
 <script lang="ts">
-	let { onCapture, onCancel }: { onCapture: (file: File) => void; onCancel: () => void } = $props();
+	let { onCapture, onCancel }: { onCapture: (file: File | null) => void; onCancel: () => void } =
+		$props();
 
 	let videoEl: HTMLVideoElement;
 	let canvasEl: HTMLCanvasElement;
@@ -61,6 +62,11 @@
 		onCancel();
 	}
 
+	function skipPhoto() {
+		stopCamera();
+		onCapture(null);
+	}
+
 	$effect(() => {
 		startCamera();
 		return () => stopCamera();
@@ -88,6 +94,7 @@
 					<span class="capture-icon"></span>
 				</button>
 			</div>
+			<button class="skip-photo-btn" onclick={skipPhoto}>Skip photo</button>
 		{/if}
 		<canvas bind:this={canvasEl} style="display: none;"></canvas>
 	</div>
@@ -156,5 +163,21 @@
 
 	.error-state p {
 		margin-bottom: 1rem;
+	}
+
+	.skip-photo-btn {
+		background: transparent;
+		border: none;
+		color: rgba(255, 255, 255, 0.7);
+		font-size: 0.9375rem;
+		padding: 0.75rem;
+		cursor: pointer;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		align-self: center;
+	}
+
+	.skip-photo-btn:hover {
+		color: white;
 	}
 </style>

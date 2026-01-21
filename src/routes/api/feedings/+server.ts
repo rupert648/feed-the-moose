@@ -71,7 +71,9 @@ export const POST: RequestHandler = async ({ request, platform, cookies }) => {
 			platform.env.VAPID_SUBJECT,
 			{
 				title: 'Moose has been fed!',
-				body: `${session.name} fed Moose`,
+				body: photoKey
+					? `${session.name} fed Moose — tap to see the photo!`
+					: `${session.name} fed Moose`,
 				url: '/'
 			}
 		)

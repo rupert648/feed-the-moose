@@ -33,6 +33,8 @@
 		</div>
 	{:else}
 		<div class="no-photo">
+			<span class="no-photo-icon">📷</span>
+			<span class="no-photo-text">No photo</span>
 			<div class="overlay">
 				<span class="who">{feeding.user_name}</span>
 				<span class="when">{formatted}</span>
@@ -66,8 +68,21 @@
 		aspect-ratio: 4/3;
 		background: var(--color-surface);
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		gap: 0.5rem;
+	}
+
+	.no-photo-icon {
+		font-size: 2.5rem;
+		opacity: 0.4;
+	}
+
+	.no-photo-text {
+		font-size: 0.875rem;
+		color: var(--color-text-muted);
+		opacity: 0.6;
 	}
 
 	.overlay {
