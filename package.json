@@ -14,7 +14,7 @@
     "db:migrate:prod": "wrangler d1 execute feed-the-moose-db --file=migrations/0001_initial.sql --remote",
     "db:studio": "wrangler d1 execute feed-the-moose-db --local --command 'SELECT 1'",
     "setup": "pnpm install && pnpm db:migrate",
-    "generate-vapid": "npx @pushforge/builder generate-vapid-keys"
+    "generate-vapid": "node scripts/generate-vapid.js"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250109.0",
