@@ -9,6 +9,7 @@ export interface FeedingStatus {
 	time: string;
 	label: string | null;
 	isFed: boolean;
+	isActive: boolean;
 	fedBy: string | null;
 	fedAt: string | null;
 	photoKey: string | null;
@@ -25,6 +26,25 @@ export interface Feeding {
 
 function getTodayDateString(): string {
 	return new Date().toISOString().split('T')[0];
+}
+
+function getCurrentUTCTimeMinutes(): number {
+	const now = new Date();
+	return now.getUTCHours() * 60 + now.getUTCMinutes();
+}
+
+function timeStringToMinutes(time: string): number {
+	const [hours, minutes] = time.split(':').map(Number);
+	return hours * 60 + minutes;
+}
+
+const ACTIVE_WINDOW_BEFORE_MINUTES = 60;
+
+function isWindowActive(windowTime: string): boolean {
+	const currentMinutes = getCurrentUTCTimeMinutes();
+	const windowMinutes = timeStringToMinutes(windowTime);
+	const activeStart = windowMinutes - ACTIVE_WINDOW_BEFORE_MINUTES;
+	return currentMinutes >= activeStart;
 }
 
 export async function getFeedingSchedule(db: D1Database): Promise<FeedingWindow[]> {
@@ -59,6 +79,7 @@ export async function getFeedingWindowStatuses(db: D1Database): Promise<FeedingS
 			time: window.time,
 			label: window.label,
 			isFed: !!feeding,
+			isActive: isWindowActive(window.time),
 			fedBy: feeding?.user_name ?? null,
 			fedAt: feeding?.fed_at ?? null,
 			photoKey: feeding?.photo_key ?? null
@@ -107,4 +128,18 @@ export async function getFeedingHistory(
 		.all<Feeding>();
 
 	return { feedings: result.results, total };
+}
+
+export async function getLatestFeedingWithPhoto(db: D1Database): Promise<Feeding | null> {
+	const result = await db
+		.prepare(
+			`SELECT f.id, f.user_id, u.name as user_name, f.window_time, f.photo_key, f.fed_at
+			 FROM feedings f
+			 JOIN users u ON f.user_id = u.id
+			 WHERE f.photo_key IS NOT NULL
+			 ORDER BY f.fed_at DESC
+			 LIMIT 1`
+		)
+		.first<Feeding>();
+	return result ?? null;
 }

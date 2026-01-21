@@ -1,16 +1,15 @@
 import type { PageServerLoad } from './$types';
-import { getFeedingWindowStatuses } from '$lib/server/feedings';
-import { getRandomFeedingPhoto } from '$lib/server/r2';
+import { getFeedingWindowStatuses, getLatestFeedingWithPhoto } from '$lib/server/feedings';
 
 export const load: PageServerLoad = async ({ parent, platform }) => {
 	const { user } = await parent();
 
 	if (!platform?.env || !user) {
-		return { user, windows: [], heroPhoto: null };
+		return { user, windows: [], latestFeeding: null };
 	}
 
 	const windows = await getFeedingWindowStatuses(platform.env.DB);
-	const heroPhoto = await getRandomFeedingPhoto(platform.env.PHOTOS);
+	const latestFeeding = await getLatestFeedingWithPhoto(platform.env.DB);
 
-	return { user, windows, heroPhoto };
+	return { user, windows, latestFeeding };
 };

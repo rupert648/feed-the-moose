@@ -50,12 +50,37 @@
 			isSubmitting = false;
 		}
 	}
+
+	function formatFeedingTime(dateStr: string): string {
+		const d = new Date(dateStr);
+		const now = new Date();
+		const isToday = d.toDateString() === now.toDateString();
+		const yesterday = new Date(now);
+		yesterday.setDate(yesterday.getDate() - 1);
+		const isYesterday = d.toDateString() === yesterday.toDateString();
+
+		const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+		if (isToday) return time;
+		if (isYesterday) return `Yesterday ${time}`;
+		return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ` ${time}`;
+	}
+
+	const heroPhotoUrl = $derived(
+		data.latestFeeding?.photo_key
+			? `/api/photos/${encodeURIComponent(data.latestFeeding.photo_key)}`
+			: null
+	);
 </script>
 
 <main>
-	{#if data.heroPhoto}
+	{#if data.latestFeeding && heroPhotoUrl}
 		<div class="hero-photo">
-			<img src={data.heroPhoto} alt="Moose" />
+			<img src={heroPhotoUrl} alt="Moose" />
+			<div class="hero-overlay">
+				<span class="overlay-who">{data.latestFeeding.user_name}</span>
+				<span class="overlay-time">{formatFeedingTime(data.latestFeeding.fed_at)}</span>
+			</div>
 		</div>
 	{:else}
 		<div class="hero-placeholder">
@@ -92,6 +117,7 @@
 	}
 
 	.hero-photo {
+		position: relative;
 		width: 100%;
 		aspect-ratio: 4/3;
 		border-radius: var(--radius);
@@ -103,6 +129,29 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+	}
+
+	.hero-overlay {
+		position: absolute;
+		top: 12px;
+		left: 12px;
+		background: rgba(0, 0, 0, 0.6);
+		color: white;
+		padding: 6px 10px;
+		border-radius: 6px;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		font-size: 0.875rem;
+	}
+
+	.overlay-who {
+		font-weight: 600;
+	}
+
+	.overlay-time {
+		font-size: 0.75rem;
+		opacity: 0.9;
 	}
 
 	.hero-placeholder {

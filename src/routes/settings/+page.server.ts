@@ -1,6 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { getAllFeedingTimes, addFeedingTime, removeFeedingTime } from '$lib/server/settings';
+import { verifySession, COOKIE_NAME } from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ platform }) => {
 	if (!platform?.env) {
@@ -12,9 +13,15 @@ export const load: PageServerLoad = async ({ platform }) => {
 };
 
 export const actions: Actions = {
-	add: async ({ request, platform }) => {
+	add: async ({ request, platform, cookies }) => {
 		if (!platform?.env) {
 			return fail(500, { error: 'Server configuration error' });
+		}
+
+		const token = cookies.get(COOKIE_NAME);
+		const session = await verifySession(token, platform.env.SHARED_SECRET);
+		if (!session) {
+			return fail(401, { error: 'Unauthorized' });
 		}
 
 		const formData = await request.formData();
@@ -34,9 +41,15 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	remove: async ({ request, platform }) => {
+	remove: async ({ request, platform, cookies }) => {
 		if (!platform?.env) {
 			return fail(500, { error: 'Server configuration error' });
+		}
+
+		const token = cookies.get(COOKIE_NAME);
+		const session = await verifySession(token, platform.env.SHARED_SECRET);
+		if (!session) {
+			return fail(401, { error: 'Unauthorized' });
 		}
 
 		const formData = await request.formData();

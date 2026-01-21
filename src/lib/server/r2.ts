@@ -17,11 +17,3 @@ export async function getPhotoUrl(bucket: R2Bucket, key: string): Promise<string
 	if (!object) return null;
 	return `/api/photos/${encodeURIComponent(key)}`;
 }
-
-export async function getRandomFeedingPhoto(bucket: R2Bucket): Promise<string | null> {
-	const listed = await bucket.list({ prefix: 'feedings/', limit: 100 });
-	if (listed.objects.length === 0) return null;
-	const randomIndex = Math.floor(Math.random() * listed.objects.length);
-	const key = listed.objects[randomIndex].key;
-	return `/api/photos/${encodeURIComponent(key)}`;
-}
