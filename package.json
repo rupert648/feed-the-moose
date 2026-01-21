@@ -12,6 +12,8 @@
     "cf-typegen": "wrangler types",
     "db:migrate": "wrangler d1 execute feed-the-moose-db --file=migrations/0001_initial.sql --local",
     "db:migrate:prod": "wrangler d1 execute feed-the-moose-db --file=migrations/0001_initial.sql --remote",
+    "db:clear": "node scripts/clear-db.js",
+    "db:clear:prod": "node scripts/clear-db.js --remote",
     "db:studio": "wrangler d1 execute feed-the-moose-db --local --command 'SELECT 1'",
     "setup": "pnpm install && pnpm db:migrate",
     "generate-vapid": "node scripts/generate-vapid.js"
