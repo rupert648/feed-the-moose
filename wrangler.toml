@@ -14,5 +14,10 @@ database_id = "344c5826-8a70-4a9f-abc2-6794523bd0b7"
 binding = "PHOTOS"
 bucket_name = "moose-photos"
 
+[observability]
+[observability.logs]
+enabled = true
+invocation_logs = true
+
 [triggers]
 crons = ["*/5 * * * *"]

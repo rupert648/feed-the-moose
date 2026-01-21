@@ -22,6 +22,7 @@ export async function savePushSubscription(
 	p256dh: string,
 	auth: string
 ): Promise<void> {
+	console.log(`[push] Saving subscription for user ${userId}, endpoint: ${endpoint.slice(0, 50)}...`);
 	await db
 		.prepare(
 			`INSERT INTO push_subscriptions (user_id, endpoint, key_p256dh, key_auth)
@@ -33,6 +34,7 @@ export async function savePushSubscription(
 		)
 		.bind(userId, endpoint, p256dh, auth)
 		.run();
+	console.log(`[push] Subscription saved for user ${userId}`);
 }
 
 export async function removePushSubscription(db: D1Database, endpoint: string): Promise<void> {
@@ -51,10 +53,20 @@ export async function sendPushToAll(
 	privateJWK: string,
 	subject: string,
 	payload: PushPayload
-): Promise<void> {
+): Promise<{ sent: number; failed: number; total: number }> {
 	const subscriptions = await getAllSubscriptions(db);
+	console.log(`[push] Found ${subscriptions.length} subscriptions`);
+
+	if (subscriptions.length === 0) {
+		console.log('[push] No subscriptions to send to');
+		return { sent: 0, failed: 0, total: 0 };
+	}
+
+	let sent = 0;
+	let failed = 0;
 
 	const sendPromises = subscriptions.map(async (sub) => {
+		console.log(`[push] Sending to subscription ${sub.id}, endpoint: ${sub.endpoint.slice(0, 50)}...`);
 		try {
 			const { endpoint, headers, body } = await buildPushHTTPRequest({
 				privateJWK,
@@ -79,19 +91,34 @@ export async function sendPushToAll(
 				}
 			});
 
+			console.log(`[push] Built request for ${sub.id}, posting to push service...`);
+
 			const response = await fetch(endpoint, {
 				method: 'POST',
 				headers,
 				body
 			});
 
+			console.log(`[push] Response for ${sub.id}: ${response.status} ${response.statusText}`);
+
 			if (response.status === 410 || response.status === 404) {
+				console.log(`[push] Subscription ${sub.id} is stale, removing`);
 				await removePushSubscription(db, sub.endpoint);
+				failed++;
+			} else if (response.status >= 200 && response.status < 300) {
+				sent++;
+			} else {
+				const text = await response.text();
+				console.error(`[push] Unexpected response for ${sub.id}: ${response.status} - ${text}`);
+				failed++;
 			}
 		} catch (e) {
-			console.error('Failed to send push to', sub.endpoint, e);
+			console.error(`[push] Failed to send push to ${sub.id}:`, e);
+			failed++;
 		}
 	});
 
 	await Promise.allSettled(sendPromises);
+	console.log(`[push] Done. Sent: ${sent}, Failed: ${failed}, Total: ${subscriptions.length}`);
+	return { sent, failed, total: subscriptions.length };
 }
