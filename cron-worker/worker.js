@@ -4,7 +4,7 @@ export default {
 		console.log('Cron calling:', url);
 		
 		const response = await fetch(url, {
-			method: 'POST',
+			method: 'GET',
 			headers: {
 				'Authorization': `Bearer ${env.SHARED_SECRET}`
 			}
